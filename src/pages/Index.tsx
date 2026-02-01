@@ -43,20 +43,36 @@ export default function Index() {
     setIsTyping(true);
 
     try {
-      const response = await fetch('https://functions.poehali.dev/470e70f7-5afa-4759-8f55-149fd297bd11', {
+      const response = await fetch('https://longcat.ai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ak_24D7VN0bq0qj2Rn30u5or9h64rO7r'
         },
-        body: JSON.stringify({ message: content })
+        body: JSON.stringify({
+          model: 'longcat-mini',
+          messages: [
+            {
+              role: 'system',
+              content: 'Ты SmartCat AI — умный ассистент для поиска и анализа информации. Отвечай кратко, по делу и дружелюбно. Используй эмодзи где уместно.'
+            },
+            {
+              role: 'user',
+              content: content
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 2000
+        })
       });
 
       const data = await response.json();
+      const aiContent = data.choices?.[0]?.message?.content || 'Извини, не смог сформировать ответ 😿';
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.message || data.error || 'Извини, произошла ошибка при обработке запроса 😿',
+        content: aiContent,
         timestamp: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
       };
       
@@ -66,7 +82,7 @@ export default function Index() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Упс! Не удалось получить ответ. Проверь интернет-соединение 🌐',
+        content: 'Упс! Не удалось получить ответ от LongCat API. Проверь соединение 🌐',
         timestamp: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
       };
       
