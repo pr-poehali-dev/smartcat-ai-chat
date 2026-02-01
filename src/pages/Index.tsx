@@ -42,16 +42,37 @@ export default function Index() {
     setMessages((prev) => [...prev, userMessage]);
     setIsTyping(true);
 
-    setTimeout(() => {
+    try {
+      const response = await fetch('https://functions.poehali.dev/470e70f7-5afa-4759-8f55-149fd297bd11', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: content })
+      });
+
+      const data = await response.json();
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `Я получил твой запрос: "${content}". Это демо-версия SmartCat AI. Для полной интеграции с LongCat API нужно настроить backend функцию! 🚀`,
+        content: data.message || data.error || 'Извини, произошла ошибка при обработке запроса 😿',
         timestamp: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
       };
+      
       setMessages((prev) => [...prev, aiMessage]);
       setIsTyping(false);
-    }, 2000);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: 'Упс! Не удалось получить ответ. Проверь интернет-соединение 🌐',
+        timestamp: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+      };
+      
+      setMessages((prev) => [...prev, errorMessage]);
+      setIsTyping(false);
+    }
   };
 
   return (
