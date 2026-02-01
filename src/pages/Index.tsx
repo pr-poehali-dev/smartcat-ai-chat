@@ -43,14 +43,14 @@ export default function Index() {
     setIsTyping(true);
 
     try {
-      const response = await fetch('https://longcat.ai/v1/chat/completions', {
+      const response = await fetch('https://api.longcat.chat/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ak_24D7VN0bq0qj2Rn30u5or9h64rO7r'
         },
         body: JSON.stringify({
-          model: 'longcat-mini',
+          model: 'LongCat-Flash-Chat',
           messages: [
             {
               role: 'system',
@@ -61,8 +61,7 @@ export default function Index() {
               content: content
             }
           ],
-          temperature: 0.7,
-          max_tokens: 2000
+          max_tokens: 1000
         })
       });
 
